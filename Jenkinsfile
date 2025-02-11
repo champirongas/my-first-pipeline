@@ -1,38 +1,67 @@
 pipeline {
     agent any
+
     stages {
         stage('Checkout') {
             steps {
-                // Clonar el repositorio
-                git url: 'https://github.com/champirongas/my-first-pipeline.git', branch: 'main'+
+                script {
+                    try {
+                        // Clonar el repositorio
+                        git url: 'https://github.com/champirongas/my-first-pipeline.git', branch: 'main'
+                    } catch (Exception e) {
+                        error "Error en el Checkout: ${e.message}"
+                    }
+                }
             }
         }
+
         stage('Build') {
             steps {
-                // Instalar dependencias
-                sh 'npm install'
+                script {
+                    try {
+                        // Verificar si npm está instalado
+                        sh 'command -v npm || { echo "npm no está instalado"; exit 1; }'
+                        // Instalar dependencias
+                        sh '#!/bin/bash -e\n npm install'
+                    } catch (Exception e) {
+                        error "Error en Build: ${e.message}"
+                    }
+                }
             }
         }
+
         stage('Test') {
             steps {
-                // Ejecutar pruebas
-                sh 'npm test'
+                script {
+                    try {
+                        // Ejecutar pruebas
+                        sh '#!/bin/bash -e\n npm test'
+                    } catch (Exception e) {
+                        error "Error en Test: ${e.message}"
+                    }
+                }
             }
         }
+
         stage('Deploy') {
             steps {
-                // Lógica de despliegue (por ejemplo, subir a un proveedor de la nube)
-                echo 'Deploying application...'
+                script {
+                    try {
+                        // Lógica de despliegue (por ejemplo, subir a un proveedor de la nube)
+                        echo 'Deploying application...'
+                    } catch (Exception e) {
+                        error "Error en Deploy: ${e.message}"
+                    }
+                }
             }
         }
     }
+
     post {
         always {
-            // Este bloque siempre se ejecutará al final del pipeline
             echo 'Pipeline completed.'
         }
         failure {
-            // Este bloque se ejecutará si el pipeline falla
             echo 'Pipeline failed!'
         }
     }
