@@ -14,7 +14,7 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                withCredentials([string(credentialsId: 'vercel-token', variable: 'VERCEL_TOKEN')]) {
+                withCredentials([string(credentialsId: 'vercel_token', variable: 'VERCEL_TOKEN')]) {
                     sh 'vercel --token $VERCEL_TOKEN --prod'
                 }
             }
